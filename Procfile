@@ -1,0 +1,1 @@
+web: gunicorn flat:app -t 1200

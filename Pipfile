@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+Jinja2 = "*"
+Flask = "*"
+tweepy = "*"
+joblib = "*"
+python-dotenv = "*"
+gunicorn = "*"
+numpy = "*"
+scikit-learn = "*"
+plotly = "*"
+pandas = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
+
+[packages.flask]
+extras = [ "async",]

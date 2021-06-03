@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Saltiest Trending Tweets</title>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<style>
+.ranking {
+    width: 80%;
+    height: 250px;
+    border:  2px solid;
+    padding: 10px;
+    background-color: aquamarine;
+    display: block;
+	margin auto;
+}
+.ranking:hover {
+    background-color: lightsteelblue;
+}
+.ranking a {
+    margin: 0 auto;
+    text-decoration: none;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    color: black;
+    font-weight: 200;
+    display: block;
+	white-space: pre-wrap;
+	}
+
+</style>
+</head>
+<body>
+<h1>Saltiest Trending Tweets</h1>
+<div id="flask_app">
+{% block content %}
+
+<div id="graph"></div>
+<div id="list">
+Loading Tweets....
+</div>
+<script>
+
+//api call 
+function api_call(load_json) {
+	
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+		var answer;
+		var user_response = JSON.parse(this.responseText);
+		load_json(user_response);
+		console.log(user_response);
+		var rest = "";
+		var rank = 0;
+		for(var i=0 in user_response){
+		    rank+= 1;
+		    rest +="<div class=\"ranking\"><a href=\"https://twitter.com/twitter/statuses/"+user_response[i]['id']+"\" target=\"_blank\"><p><img src=\""+user_response[i]['img_url']+"\" witdh=\"50\" height=\"50\"></p><p>Rank: "+rank+" <br>Username: "+user_response[i]['user']+"<br></p><p>"+user_response[i]['Tweet']+"</p><p>Saltiness: "+user_response[i]['saltiness']+" %</p></a></div>";
+			//rest += user_response[i]['Tweet']+"<br>";
+			}
+			document.getElementById("list").innerHTML = rest;
+    }
+  };
+  xhttp.open("GET", "predict", true);
+  xhttp.send();
+}
+function load_json(xhttp) {
+ 	var x_list = new Array();
+	var y_list = new Array();
+	var verified = xhttp;
+	var text_list = new Array();
+	//create lists
+	for(var i = 0; i < verified.length; i++){
+	x_list[i] = verified[i]['user'];
+	y_list[i] = verified[i]['saltiness'];
+	text_list[i] = verified[i]['Tweet'];
+	
+	}
+	var saltiness = {
+	type: 'bar',
+	text: text_list,
+	x: x_list,
+	y: y_list,
+	marker: {
+      color:["#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52","#bd3786"],
+      line: {
+	  color:["#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52","#bd3786"],
+          width: 2.5
+      }
+  }
+};
+
+var data = [ saltiness ];
+
+var layout = { 
+  title: 'Saltiest Tweets',
+  font: {size: 18},
+  showlegend: false,
+};
+
+var config = {responsive: true}
+
+Plotly.newPlot('graph', data, layout, config );
+}
+window.onload=api_call(load_json);
+</script>
+{% endblock %}
+</div>
+
+
+</body>
+</html>
